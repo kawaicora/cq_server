@@ -1,0 +1,62 @@
+# ========================== 基础 Python 忽略项 ==========================
+# 字节码文件（Python 编译产物）
+__pycache__/
+*.py[cod]
+*$py.class
+
+# 虚拟环境（常见的虚拟环境工具）
+# venv (标准库)
+venv/
+ENV/
+# virtualenvwrapper
+.venv/
+
+
+# ========================== 运行时/日志/缓存 忽略项 ==========================
+# 日志文件
+*.log
+logs/
+
+.env
+.env.local
+.env.*.local
+# 数据库文件
+*.db
+*.sqlite
+*.sqlite3
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb
+
+
+# ========================== 操作系统 忽略项 ==========================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*

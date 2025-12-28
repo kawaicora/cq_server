@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- 引入 layui 样式 -->
+    <link rel="stylesheet" href="/static/layui-v2.6.8/layui/css/layui.css">
+    <script src="/static/js/jquery.min.js"></script>
+    <!-- 引入 layui JS -->
+    <script src="/static/layui-v2.6.8/layui/layui.js"></script>
+    <!-- 进入加密解密库 -->
+    <script language="javascript" src="/static/js/jsencrypt.min.js"></script>
+    <!-- 引入 socket.io 客户端库 -->
+    <script src="/static/js/socket.io.js"></script>
+    <style type="text/css">
+        :root {
+            --dark-bg: #1a1a1a;
+            --dark-card: #242424;
+            --dark-border: #333;
+            --dark-text: #e0e0e0;
+            --accent-color: #1E9FFF;
+            --hover-color: #2196f3;
+        }
+
+
+        body {
+            min-height: 100vh;
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif !important;
+
+        }
+
+        .main-nav {
+            display: flex;
+            justify-content: space-between;
+            z-index: 2;
+        }
+
+        .main-nav .nav-group-right {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+        }
+
+        .main-nav div .nav-logo img {
+            height: 45px;
+            width: auto;
+
+        }
+
+        .nav-user-info,
+        .nav-user-info a {
+            display: flex !important;
+            align-items: center;
+        }
+
+        .nav-username {
+            display: flex;
+            justify-content: center;
+        }
+
+        .nav-logo {
+            padding: 5px;
+            margin: auto;
+        }
+
+        .layui-nav-more {
+            display: contents !important;
+        }
+
+
+        .nav-switch {
+            position: static;
+
+            height: 40px;
+            width: 40px;
+            border-radius: 10px;
+            border: solid 1px white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 10px;
+            background-color: #e0e0e044;
+        }
+
+        .nav-switch i {
+            font-size: 32px;
+        }
+
+        @media (max-width: 768px) {}
+
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+    {% block head %}{% endblock %}
+</head>
+
+<body>
+    <div class="nav-switch hidden"><i class="layui-icon layui-icon-align-left "></i></div>
+    <ul class="layui-nav main-nav">
+        <li class="layui-nav-item">
+            <a href="/view/game_manager">传奇游戏管理</a>
+        </li>
+        
+
+
+    </ul>
+
+    {% block header %}{% endblock %}
+    {% block content %}{% endblock %}
+    {% block footer %}{% endblock %}
+    <script type="text/javascript">
+        Base.inst().GetUserInfo();
+
+        // 监听屏幕尺寸变化
+        function checkScreenSize() {
+            if (window.matchMedia("(max-width: 768px)").matches) {
+                $('.main-nav').addClass('layui-nav-tree hidden');
+                $('.nav-logo').addClass('hidden');
+                $('.main-nav')[0].style.flexDirection = "column-reverse";
+
+                $('.layui-nav-item').toArray().forEach(element => {
+                    element.style.display = "flex"
+                    element.style.justifyContent = "center"
+                });
+                $(".nav-down-item,.nav-user-info i").addClass('hidden');
+
+                $(".exit-login-btn").removeClass('hidden');
+                $(".nav-switch").removeClass('hidden')
+
+                $('.main-nav')[0].style.position = "absolute"
+
+            } else {
+                $('.main-nav').removeClass('layui-nav-tree hidden');
+                $('.main-nav')[0].style.flexDirection = "row";
+                $('.nav-logo').removeClass('hidden');
+
+                $(".nav-down-item,.nav-user-info i").removeClass('hidden');
+
+                $(".exit-login-btn").addClass('hidden')
+                $(".nav-switch").addClass('hidden')
+                $('.layui-nav-item').toArray().forEach(element => {
+                    element.style.display = "inline-block"
+                    element.style.justifyContent = "center"
+                    $('.main-nav')[0].style.position = "relative"
+                });
+
+            }
+
+        }
+
+        // 页面加载时检查
+        checkScreenSize();
+
+        // 窗口大小改变时检查
+        $(window).resize(checkScreenSize);
+        let menuState = false
+        $(".nav-switch").on("click", () => {
+            if (menuState) {
+                $('.main-nav').addClass('hidden');
+
+                menuState = false
+            } else {
+                $('.main-nav').removeClass('hidden');
+
+                menuState = true
+            }
+        })
+
+    </script>
+</body>
+
+</html>

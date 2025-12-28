@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+
+{% block head %}
+{% endblock %}
+
+
+
+
+{% block content %}
+
+
+
+<div class="layui-container">
+    <ul class="layui-nav">
+        <li class="layui-nav-item" style="width: 100%; text-align: center;">
+            <span style="font-size: 1.2em;">聊天室</span>
+        </li>
+    </ul>
+
+
+    <!-- 聊天区域 -->
+    <div class="layui-row">
+        <div class="layui-col-xs12">
+            <div class="layui-card">
+                < <div class="layui-card-body">
+
+                    <div class="layui-form">
+                        <div class="layui-form-item">
+                            <div class="layui-input-group">
+
+                                <div class="layui-input-suffix">
+
+                                    <button id="send_pic_button" class="layui-btn">
+                                        <i class="layui-icon layui-icon-release"></i> 发送版本文件
+                                    </button>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+
+    function sendMediaMessage() {
+        // 创建一个 input 元素用于选择文件
+        const input = document.createElement('input');
+        input.type = 'file';
+        // 设置允许选择的文件类型
+        // input.accept = 'image/gif, image/jpeg, image/jpg, image/png, image/bmp';
+
+        // 当用户选择文件后触发
+        input.addEventListener('change', function () {
+            const file = this.files[0];
+            if (file) {
+                const formData = new FormData();
+                formData.append('file', file);
+
+                $.ajax({
+                    url: '/api/cq/upload',
+                    type: 'POST',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    xhr: function () {
+                        const xhr = new window.XMLHttpRequest();
+                        // 监听上传进度事件
+                        xhr.upload.addEventListener('progress', function (event) {
+                            if (event.lengthComputable) {
+                                const percentComplete = (event.loaded / event.total) * 100;
+                                Base.inst().BaseLogger.info(`上传进度: ${percentComplete}%`);
+                                // 你可以在这里更新页面上的进度条显示
+                            }
+                        });
+                        return xhr;
+                    },
+                    success: function (response) {
+
+                        if (response.retcode === 0) {
+                            CommonUtils.MsgBox('上传成功: ' + response.msg);
+                            
+                        } else {
+                            CommonUtils.MsgBox('上传失败: ' + response.msg);
+                        }
+                    },
+                    error: function (error) {
+                        Base.inst().BaseLogger.info('上传失败', error);
+                    }
+                });
+            }
+        });
+
+        // 模拟点击 input 元素，触发文件选择对话框
+        input.click();
+    }
+    async function init(){
+        document.getElementById('send_pic_button').onclick = sendMediaMessage;
+    }
+    // 页面加载完成后初始化
+    document.addEventListener('DOMContentLoaded', init);
+
+
+
+</script>
+
+{% endblock %}

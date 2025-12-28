@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>零食的小站!</title>
+
+<style>
+
+    .content-container {
+        /* 让 body 内的元素在水平和垂直方向上都居中 */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        /* 设置 body 的高度为视口高度，确保内容垂直居中效果生效 */
+        min-height: 100vh;
+        margin: 0;
+    }
+    .center-container {
+        /* 设置文本在容器内水平和垂直居中 */
+        text-align: center;
+        /* 设置容器的背景颜色为白色半透明 */
+        background-color: rgba(255, 255, 255, 0.4);
+        /* 设置容器的内边距 */
+        padding: 20px;
+        /* 设置容器的圆角 */
+        border-radius: 10px;
+        /* 设置容器的宽度，可根据需求调整 */
+        width: 80%;
+        max-width: 600px;
+    }
+
+    h1,pre{
+        margin: 0;
+        font-size: 36px;
+        /* 启用文字描边 */
+        -webkit-text-stroke: 2px;
+        text-stroke: 2px;
+        /* 定义渐变颜色 */
+        /* background: linear-gradient(to right, #FF0000, #FF7F00, #FFFF00, #00FF00, #0000FF, #4B0082, #8F00FF); */
+        background: rgb(255, 255, 255);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-fill-color: transparent;
+        /* 应用动画 */
+        animation: color-stroke 5s linear infinite;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+
+    @keyframes color-stroke {
+        0% {
+            -webkit-text-stroke-color: #FF0000;
+            text-stroke-color: #FF0000;
+        }
+
+        14.28% {
+            -webkit-text-stroke-color: #FF7F00;
+            text-stroke-color: #FF7F00;
+        }
+
+        28.57% {
+            -webkit-text-stroke-color: #FFFF00;
+            text-stroke-color: #FFFF00;
+        }
+
+        42.86% {
+            -webkit-text-stroke-color: #00FF00;
+            text-stroke-color: #00FF00;
+        }
+
+        57.14% {
+            -webkit-text-stroke-color: #0000FF;
+            text-stroke-color: #0000FF;
+        }
+
+        71.43% {
+            -webkit-text-stroke-color: #4B0082;
+            text-stroke-color: #4B0082;
+        }
+
+        85.71% {
+            -webkit-text-stroke-color: #8F00FF;
+            text-stroke-color: #8F00FF;
+        }
+
+        100% {
+            -webkit-text-stroke-color: #FF0000;
+            text-stroke-color: #FF0000;
+        }
+    }
+
+    p {
+        margin: 10px 0;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+
+    .can-select {
+        -webkit-user-select: text;
+        -moz-user-select: text;
+        -ms-user-select: text;
+        user-select: text;
+    }
+
+    iframe {
+        width: 100%;
+        height: 100px;
+        border: none;
+        margin-top: 0px;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+</style>
+
+{% endblock %}
+
+{% block content %}
+<div class="content-container">
+    <div class="center-container">
+        <h1>支付完成!</h1>
+    </div>
+
+</div>
+
+
+
+
+
+
+{% endblock %}

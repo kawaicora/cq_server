@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  cq-server:
+    build: .
+    container_name: cq-server
+    volumes:
+      - ./cq_server:/home/cq_server  # 挂载本地目录到容器
+    working_dir: /home/cq_server/
+    command: python manage.py
+    # 可根据需要添加端口映射
+    ports:
+      - "5500:5500"
+    # 可根据需要添加环境变量
+    # environment:
+    #   - ENV_VAR=value
+    restart: unless-stopped
+    

@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Layui 简易表单示例</title>
+    <link rel="stylesheet" href="/static/layui-v2.6.8/layui/css/layui.css">
+    <style>
+        .layui-btn {
+            margin: 3px !important;
+        }
+        .online-hum-dis-view {
+            display: block;
+            margin: auto;
+            width: fit-content;
+            color: brown;
+            font-size: x-large;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="layui-container" id="controller_view" style="padding: 50px;">
+        <div class="layui-text online-hum-dis-view">目前在线人数: <span id="online_hum_count">0</span></div>
+        <div class="layui-container">
+            <button class="layui-btn" id="openPayBtn">角色充值</button>
+            <button class="layui-btn" id="openDiyPayBtn">角色diy充值</button>
+        </div>
+        <div class="layui-container" id="bt-view"></div>
+        <!-- 新增日志滚动窗口 -->
+        <div class="layui-container" style="margin-top: 20px;">
+            <div class="layui-card">
+                <div class="layui-card-header">系统日志</div>
+                <div class="layui-card-body">
+                    <div id="log-container" class="log-container" style="height: 450px; overflow-y: auto; border: 1px solid #e6e6e6; padding: 10px; background-color: #f9f9f9;">
+                        <div id="log-content" class="log-content">
+                            <!-- 日志内容将动态添加到这里 -->
+                            <!-- <p class="log-item">系统已启动</p>
+                            <p class="log-item">正在监听连接...</p> -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="/static/js/socket.io.js"></script>
+    <script src="/static/layui-v2.6.8/layui/layui.js"></script>
+    <script>
+        let socket = io(`${window.location.origin}`);
+
+        // 日志滚动控制逻辑
+        const logContainer = document.getElementById('log-container');
+        const logContent = document.getElementById('log-content');
+
+        // 自动滚动到底部的函数
+        function scrollToBottom() {
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        // 初始滚动到底部
+        scrollToBottom();
+
+        // 监听滚动事件，判断用户是否手动滚动
+        let userHasScrolled = false;
+        logContainer.addEventListener('scroll', function() {
+            // 如果用户滚动到离底部不到20px的位置，认为用户想回到自动滚动状态
+            if (logContainer.scrollTop + logContainer.clientHeight >= logContainer.scrollHeight - 20) {
+                userHasScrolled = false;
+            } else {
+                userHasScrolled = true;
+            }
+        });
+
+        // 示例：模拟添加新日志
+        function addLog(message) {
+            const logItem = document.createElement('p');
+            logItem.className = 'log-item';
+            logItem.textContent = `${message}`;
+            logContent.appendChild(logItem);
+            
+            // 如果用户没有手动滚动，自动滚动到底部
+            if (!userHasScrolled) {
+                scrollToBottom();
+            }
+        }
+
+
+
+
+        setInterval(()=>{
+            socket.emit('gm_get_online_hum_count')
+        },3000)
+        socket.emit("load_button_config")
+        socket.on("log_content_update",data =>{
+            addLog(data["content"])
+        })
+        socket.on("execute_ret",data=>{
+            console.info(data)
+            switch (data['action']){
+                case 'gm_pay':
+                    if (data['code'] == 0){
+                        // 显示成功消息
+                        layer.msg(`充值成功!`, { icon: 1 });
+                    } else {
+                        layer.msg(`充值失败!`, { icon: 2 });
+                    }
+                    break;
+                case 'gm_diy_pay':
+                    if (data['code'] == 0){
+                        // 显示成功消息
+                        layer.msg(`充值成功!`, { icon: 1 });
+                    } else {
+                        layer.msg(`充值失败!`, { icon: 2 });
+                    }
+                    break;
+                case 'gm_get_online_hum_count':
+                    if (data['code'] == 0){
+                        var online_hum_count = data['data']['online'];
+                        document.getElementById('online_hum_count').innerText = online_hum_count;
+                    }
+                    break;
+                case 'load_button_config':
+                    let result = data['data']
+                    for (const key in result) {
+                        document.getElementById("bt-view").innerHTML = document.getElementById("bt-view").innerHTML +`<button class="layui-btn" onclick="socket.emit('reload_m2_config',{id:${key}})" id="reload_config_${key}">${result[key]}</button>`
+                    }
+                    break;
+                case 'reload_m2_config':
+                    // alert(JSON.stringify(data['data']))
+                    break
+                default:
+                    console.info("未知操作");
+                    break;
+            }
+        })
+        layui.use(['layer', 'form'], function () {
+            const layer = layui.layer;
+            const form = layui.form;
+
+            // 打开表单按钮事件
+            document.getElementById('openPayBtn').addEventListener('click', function () {
+                layer.open({
+                    type: 1,
+                    title: '充值操作',
+                    area: '400px',
+                    content: `
+            <form class="layui-form" style="padding: 20px;">
+              <div class="layui-form-item">
+                <label class="layui-form-label">角色名</label>
+                <div class="layui-input-block">
+                  <input type="text" name="charater" placeholder="请输入角色名" class="layui-input" required>
+                </div>
+              </div>
+              <div class="layui-form-item">
+                <label class="layui-form-label">金额</label>
+                <div class="layui-input-block">
+                  <input type="number" name="amount" placeholder="请输入充值金额" class="layui-input" required min="0.01" step="0.01">
+                </div>
+              </div>
+              <div class="layui-form-item text-center">
+                <button type="button" class="layui-btn" id="submitForm">确认充值</button>
+                <button type="button" class="layui-btn layui-btn-primary" id="closeForm">取消</button>
+              </div>
+            </form>
+          `,
+                    success: function (layero, index) {
+                        // 确认按钮事件
+                        layero.find('#submitForm').on('click', function () {
+                            const form = layero.find('form')[0];
+                            const charater = form.querySelector('[name="charater"]').value;
+                            const amount = form.querySelector('[name="amount"]').value;
+
+                            // 简单验证
+                            if (!charater) {
+                                layer.msg('请输入角色名', { icon: 2 });
+                                return;
+                            }
+
+                            if (!amount || isNaN(amount) || parseFloat(amount) <= 0) {
+                                layer.msg('请输入正确的金额', { icon: 2 });
+                                return;
+                            }
+
+                            // 处理表单数据（这里只是示例，实际项目中可能会发送到服务器）
+                            console.log('提交数据:', { charater, amount });
+                            socket.emit('gm_pay', { charater: charater, amount: amount });
+
+                            
+
+                            // 关闭表单
+                            layer.close(index);
+                        });
+
+                        // 取消按钮事件
+                        layero.find('#closeForm').on('click', function () {
+                            layer.close(index);
+                        });
+                    }
+                });
+
+            });
+
+            // 打开表单按钮事件
+            document.getElementById('openDiyPayBtn').addEventListener('click', function () {
+                layer.open({
+                    type: 1,
+                    title: '自定义充值操作',
+                    area: '400px',
+                    content: `
+            <form class="layui-form" style="padding: 20px;">
+              <div class="layui-form-item">
+                <label class="layui-form-label">角色名</label>
+                <div class="layui-input-block">
+                  <input type="text" name="charater" placeholder="请输入角色名" class="layui-input" required>
+                </div>
+              </div>
+              <div class="layui-form-item">
+                <label class="layui-form-label">金额</label>
+                <div class="layui-input-block">
+                  <input type="number" name="amount" placeholder="请输入充值金额" class="layui-input" required min="0.01" step="0.01">
+                </div>
+              </div>
+              <div class="layui-form-item text-center">
+                <button type="button" class="layui-btn" id="submitForm">确认充值</button>
+                <button type="button" class="layui-btn layui-btn-primary" id="closeForm">取消</button>
+              </div>
+            </form>
+          `,
+                    success: function (layero, index) {
+                        // 确认按钮事件
+                        layero.find('#submitForm').on('click', function () {
+                            const form = layero.find('form')[0];
+                            const charater = form.querySelector('[name="charater"]').value;
+                            const amount = form.querySelector('[name="amount"]').value;
+
+                            // 简单验证
+                            if (!charater) {
+                                layer.msg('请输入角色名', { icon: 2 });
+                                return;
+                            }
+
+                            if (!amount || isNaN(amount) || parseFloat(amount) <= 0) {
+                                layer.msg('请输入正确的金额', { icon: 2 });
+                                return;
+                            }
+
+                            // 处理表单数据（这里只是示例，实际项目中可能会发送到服务器）
+                            console.log('提交数据:', { charater, amount });
+                            socket.emit('gm_diy_pay', { charater: charater, amount: amount });
+
+                            // 显示成功消息
+                            layer.msg(`已为角色 ${charater} 充值 ${amount} 元`, { icon: 1 });
+
+                            // 关闭表单
+                            layer.close(index);
+                        });
+
+                        // 取消按钮事件
+                        layero.find('#closeForm').on('click', function () {
+                            layer.close(index);
+                        });
+                    }
+                });
+
+            });
+
+        });
+    </script>
+</body>
+
+</html>

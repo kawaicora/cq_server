@@ -1,0 +1,80 @@
+{
+    "platformId": 116289,
+    "runtime": 1751886109,
+    "isIos": 0,
+    "gameType": "cq",
+    "refer": 9762,
+    "urlsuffix": "3.3.1",
+    "customData": {
+        "isEncrypt": 1,
+        "needYD": 1,
+        "npOpenStatus": 0,
+        "npConfigName": "",
+        "newEngineVersion": false
+    },
+    "h5_urlsuffix": "",
+    "modData": [
+        {
+            "name": "\u56db\u901a\u4f20\u5947",
+            "operid": 9762,
+            "id": "mod_fgcq",
+            "srvlist": "http://list-new.dhsf.xqhuyu.com/serverlist/116289/serverlist.txt",
+            "platformId": 116289,
+            "winURL": "http://static.dhsf.huiyuehz.com/game_mubao/20220126/",
+            "noticeURL": "http://www.996m2.com",
+            "homeURL": "http://www.996m2.com",
+            "helpURL": "http://www.996m2.com",
+            "logo": {
+                "url": "",
+                "name": "9762_1751886109"
+            },
+            "logo_mini": {
+                "url": "",
+                "name": "logo_mini_9762_1751886109"
+            },
+            "OpenSSL": 0,
+            "gray_server": "",
+            "status": 0,
+            "iis": "",
+            "ip": "",
+            "UpgradeSetting": "",
+            "UpgradeEnvir": "",
+            "pcStatus": 0,
+            "pcCocosStatus": 1,
+            "pcDefaultType": "cocos",
+            "subMod": [
+                {
+                    "name": "\u56db\u901a\u4f20\u5947",
+                    "operid": 9762,
+                    "id": "stcq_9762",
+                    "srvlist": "http://list-new.dhsf.xqhuyu.com/serverlist/116289/serverlist.txt",
+                    "logo": {
+                        "url": "",
+                        "name": "9762_1751886109"
+                    },
+                    "logo_mini": {
+                        "url": "",
+                        "name": "logo_mini_9762_1751886109"
+                    },
+                    "platformId": 116289,
+                    "game_signkey": "ef16ec7447fe68187decc1b398ef9833",
+                    "xk": "",
+                    "xkDomain": "http://server.zqdjy.cn"
+                }
+            ]
+        }
+    ],
+    "resVer": "?v=20250707133238",
+    "resURL": "http://hscdn.dhsf.xqhuyu.com/dhsf/cq2/",
+    "resURL_ad": "http://hscdn.dhsf.xqhuyu.com/dhsf/cq2/",
+    "resURL_ios": "http://hscdn.dhsf.xqhuyu.com/dhsf/cq2_ios/",
+    "resURL_win": "http://hscdn.dhsf.xqhuyu.com/dhsf/cq2_win/",
+    "resURL2": "http://hscdn.dhsf.xqhuyu.com/dhsf/cq2/",
+    "resURL_ad2": "http://hscdn.dhsf.xqhuyu.com/dhsf/cq2/",
+    "resURL_ios2": "http://hscdn.dhsf.xqhuyu.com/dhsf/cq2_ios/",
+    "resURL_win2": "http://hscdn.dhsf.xqhuyu.com/dhsf/cq2_win/",
+    "resURL_pc": "http://cdnwd.dhsf.xqhuyu.com/dhsf/cq2_pc/",
+    "resURL_pc2": "http://cdnwd.dhsf.xqhuyu.com/dhsf/cq2_pc/",
+    "resURL_cocosh5": "https://hscdn.dhsf.huiyuehz.com/cocosh5/cq2_cocosh5/",
+    "resVer_cocosh5": "?v=20250702160210"
+}

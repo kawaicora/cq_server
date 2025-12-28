@@ -1,0 +1,11 @@
+        v.srvid           = v.d or v.srvid                                     
+        v.port            = v.p or v.port                       
+        v.state           = v.s or v.state    
+        v.urlsuffix       = v.u or v.urlsuffix               
+        v.mainsrvid       = v.m or v.mainsrvid                               
+        v.tag             = v.t or v.tag                                  
+        v.srvname         = v.n or v.srvname 
+        v.gmurlsuffix     = v.g or v.gmurlsuffix
+        v.srvip           = v.i or v.srvip                 
+        v.proxyport       = v.x or v.proxyport
+        v.beta            = v.b or v.beta    
