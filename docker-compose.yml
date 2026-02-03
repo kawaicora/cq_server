@@ -11,8 +11,34 @@ services:
     # 可根据需要添加端口映射
     ports:
       - "5500:5500"
-    # 可根据需要添加环境变量
-    # environment:
-    #   - ENV_VAR=value
+    env_file:
+      - ./.env
     restart: unless-stopped
     
+
+  # 新增 Microsoft SQL Server 服务
+  msserver:
+    # 使用官方 SQL Server 镜像（Linux 版，适配 Docker）
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: cq-msserver
+    # 必要的环境变量（SQL Server 启动必需）
+    environment:
+      - ACCEPT_EULA=Y  # 接受最终用户许可协议（必须为 Y）
+      - SA_PASSWORD=mssql_HPNwE4  # SA 密码，与你原有连接字符串一致
+      - MSSQL_PID=Developer  # 版本（Developer 开发版，免费）
+      - MSSQL_TCP_PORT=1433  # 监听端口
+    # 端口映射：宿主机 1433 端口映射到容器 1433 端口（可根据需要修改）
+    ports:
+      - "1433:1433"
+    # 数据持久化：挂载卷到容器的 SQL Server 数据目录，避免容器删除后数据丢失
+    volumes:
+      - ./mssql_data:/var/opt/mssql
+    restart: unless-stopped
+    # 加入自定义网络，让 cq-server 能通过别名访问
+    # networks:
+    #   - cq-network
+    # 限制 SQL Server 内存使用（可选，避免占满宿主机内存）
+    deploy:
+      resources:
+        limits:
+          memory: 2G
