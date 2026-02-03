@@ -15,15 +15,9 @@ import smtplib
 from email.mime.text import MIMEText
 from email.header import Header
 
-from cryptography.hazmat.primitives.asymmetric import rsa,padding
-from cryptography.hazmat.primitives import serialization
-from cryptography.fernet import Fernet
-from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
-from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives import serialization, hashes
-from cryptography.hazmat.primitives.kdf.scrypt import Scrypt
+
 from flask import Response
-from jinja2 import Environment, FileSystemLoader
+
 import rarfile
 import zipfile
 T = TypeVar("T")

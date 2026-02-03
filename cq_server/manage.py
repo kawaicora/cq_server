@@ -1,7 +1,8 @@
 # -*- coding:utf-8 -*-
+import dotenv,os  # 导入 python-dotenv
+dotenv.load_dotenv()
 
-import threading
-from app import app, socketio,logger
+from app import app, socketio
 from app.utils.M2LoggerServer import M2LoggerServer
 import warnings
 from loguru import logger
@@ -13,9 +14,9 @@ if __name__ == "__main__":
         # 使用 eventlet 作为后端服务器
         socketio.run(
             app, 
-            host="0.0.0.0", 
-            port=5500, 
-            debug=True, 
+            host=os.getenv("LISTEN_HOST","0.0.0.0"), 
+            port=int(os.getenv("LISTEN_PORT",80)),
+            debug=os.getenv("DEBUG",False), 
             use_reloader=False,
             allow_unsafe_werkzeug=True  # 允许在异步模式下使用调试功能
         )

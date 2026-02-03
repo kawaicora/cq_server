@@ -1,22 +1,26 @@
 # -*- coding:utf-8 -*-
 import os,sys
 class DefaultConfig (object):
+    DEBUG = os.getenv("DEBUG", "False").lower() == "true"  # 转换为布尔值（.env 中是字符串）
+    USE_X_SENDFILE = False
+    TRUSTED_HOSTS = None
+    SERVER_NAME = os.getenv("SERVER_NAME")
+    APPLICATION_ROOT = os.getenv("BASE_DIR", os.getcwd())  # 从 .env 读取，默认 os.getcwd()
+    MAX_CONTENT_LENGTH = int(os.getenv("MAX_CONTENT_LENGTH", 4294967296))  # 转换为整数
 
-    M2_SERVICE_ADDRESS = ("127.0.0.1",6999)
-    SDK_BASE_URL = "http://10.0.0.202:5500"
-    M2_DATABASE  = (
-        "mssql+pyodbc://sa:mssql_HPNwE4@127.0.0.1:1433/dhsf_stcq_9762_game_9306444_mdf?"
-        "driver=ODBC+Driver+17+for+SQL+Server"
-    )   #############传奇数据库
-    BASE_DIR = os.getcwd() # 项目根目录
-    DEBUG = True # 是否开启调试模式
-    MAX_CONTENT_LENGTH = 4096 * 1024 * 1024 # 4GB
+    TEMPLATES_AUTO_RELOAD = os.getenv("TEMPLATES_AUTO_RELOAD", "True").lower() == "true"
+    MAX_COOKIE_SIZE = int(os.getenv("MAX_COOKIE_SIZE", 4093))
+    M2_SERVICE_ADDRESS_ARR = os.getenv("M2_SERVICE_ADDRESS").split(":")
+    M2_SERVICE_ADDRESS = (M2_SERVICE_ADDRESS_ARR[0],int(M2_SERVICE_ADDRESS_ARR[1]))
+    M2_DATABASE  = os.getenv("M2_DATABASE_URL")
+        
+   #############传奇数据库
+    SDK_BASE_URL = os.getenv("SDK_BASE_URL")
+    BASE_DIR = os.getenv("BASE_DIR", os.getcwd())
+    
     # 静态文件夹的路径
-    STATIC_FOLDER = 'static'
-    TEMPLATES_FOLDER ='templates'
-    UPLOAD_FOLDER = "static/upload/"
-    TEMPLATES_AUTO_RELOAD = True # 模板自动加载
-    SQLALCHEMY_ECHO = False # 是否开启SQLAlchemy的调试模式
-    SQLALCHEMY_TRACK_MODIFICATIONS = False # 是否追踪对象的修改
-
- 
+    STATIC_FOLDER = os.getenv("STATIC_FOLDER","static")
+    TEMPLATES_FOLDER = os.getenv("TEMPLATES_FOLDER","templates")
+    UPLOAD_FOLDER = os.getenv("UPLOAD_FOLDER","static/upload/")
+    SQLALCHEMY_ECHO = os.getenv("SQLALCHEMY_ECHO", "False").lower() == "true"
+    SQLALCHEMY_TRACK_MODIFICATIONS = os.getenv("SQLALCHEMY_TRACK_MODIFICATIONS", "False").lower() == "true"
