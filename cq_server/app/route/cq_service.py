@@ -479,12 +479,20 @@ def enter_game_client():
 
 def modlist_v1(config_path: str):
     current_app.logger.info(f"config_path: {config_path}")
-    json_data= {
-        "code":200,
-        "data":[
-            f"{DefaultConfig.SDK_BASE_URL}/modlist/v2/modlist.json"#配置url
-            ],"msg":"操作成功"} 
-    
+    if "modlist3" in config_path:
+
+        # current_app.logger.info(f"传奇版本:{ver}")
+        json_data= {
+            "code":200,
+            "data":[
+                f"{DefaultConfig.SDK_BASE_URL}/modlist/v2/modlist3.json"#配置url
+                ],"msg":"操作成功"} 
+    else:
+        json_data= {
+            "code":200,
+            "data":[
+                f"{DefaultConfig.SDK_BASE_URL}/modlist/v2/modlist2.json"#配置url
+                ],"msg":"操作成功"} 
     return CommonUtils.json_response(json_data)
 
 
@@ -492,8 +500,15 @@ def modlist_v1(config_path: str):
 @bp.route("/modlist/v2/<path:config_path>",methods=['GET','POST'])#二阶段获取服务器配置地址
 def modlist_v2(config_path: str):
     current_app.logger.info(f"config_path: {config_path}")
+    config_file_path = ""
+    if "modlist3" in config_path:
+
+        # current_app.logger.info(f"传奇版本:{ver}")
+        config_file_path = f"data/cq_data/modlist3.json"
+    else:
+        config_file_path = f"data/cq_data/modlist2.json"
     json_data= {}
-    with open("data/cq_data/modlist.json","r",encoding="utf-8") as fp:
+    with open(config_file_path,"r",encoding="utf-8") as fp:
         json_data = json.loads(fp.read().replace("{{SDK_BASE_URL}}",DefaultConfig.SDK_BASE_URL))
 
     for i in range(len(json_data["modData"])):
@@ -510,8 +525,14 @@ def modlist_v2(config_path: str):
 @bp.route("/serverlist/<path:config_path>")#三阶段获取服务信息
 def server_list(config_path):
     current_app.logger.info(f"config_path: {config_path}")
+    config_file_path = ""
+    if "serverlist3" in config_path :
+        config_file_path = "data/cq_data/serverlist3.json"
+    else:
+        config_file_path = "data/cq_data/serverlist2.json"
     json_data= {}
-    with open("data/cq_data/serverlist.json","r",encoding="utf-8") as fp:
+    
+    with open(config_file_path,"r",encoding="utf-8") as fp:
         json_data = json.loads(fp.read().replace("{{SDK_BASE_URL}}",DefaultConfig.SDK_BASE_URL))
     # encryptedData = dataEncrypt(json.dumps(json_data).encode(encoding='utf-8'),xxtea_sign,xxtea_key)
     # b64_str = base64.b64encode(encryptedData)

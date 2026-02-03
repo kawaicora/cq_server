@@ -6,12 +6,12 @@ import json
 import socket
 from app.utils.CommonUtils import *
 from app.route.cq_service import log_content_update
-
+from app.settings import DefaultConfig
 from app.utils.LoggerManager import logger 
 
 
 class M2LoggerServer(threading.Thread):
-    def __init__(self,address=("0.0.0.0",6998)):
+    def __init__(self,address=(DefaultConfig.LOGGER_SERVICE_LISTEN_HOST,DefaultConfig.LOGGER_SERVICE_LISTEN_PORT)):
         super(M2LoggerServer,self).__init__()
         self.logger = logger
         self.session = []
@@ -70,13 +70,13 @@ class M2LoggerServer(threading.Thread):
                 data = client_socket.recv(8192)
                 if not data:
                     break
-
+                # CommonUtils.hex_dump(logger.info,data)
                 try:
                     json_arr = self.decode_data_bin(data)
                     for e in json_arr:
                         # self.logger.info(f"{e['dCreateTime'].replace("\'","")}  {e['sReserve']}")
                         log_content_update(f"{e['dCreateTime'].replace("\'","")}  {e['sReserve']}")
-                        
+                        CommonUtils.format_json_log(logger.info,e)
                         message = [
                             {
                                 'type':'text',
@@ -102,6 +102,7 @@ class M2LoggerServer(threading.Thread):
     def decode_data_bin(self,data):
         # 定义JSON数据的起始标记和结束标记
         START_MARKER = b'04132'  # 对应字节 30 34 31 33 32
+        START_MARKER_2=b'02000'
         END_MARKER = b'\x00'     # 空字节
         
         json_list = []
@@ -112,6 +113,7 @@ class M2LoggerServer(threading.Thread):
             # 查找下一个JSON起始标记
             start_pos = data.find(START_MARKER, current_pos)
             if start_pos == -1:
+                start_pos = data.find(START_MARKER_2, current_pos)
                 break  # 没有更多JSON数据
             
             # 计算JSON数据的起始位置（跳过标记本身）

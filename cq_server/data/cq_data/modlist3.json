@@ -1,0 +1,36 @@
+
+{
+
+  "resURL_ad": "http://cdn.c3yq.huiyuewl.net/c3yq/cq3/cq3_and/",
+  "resURL_ios": "http://cdn.c3yq.huiyuewl.net/c3yq/cq3/cq3_ios/",
+  "resURL_win": "http://cdn.c3yq.huiyuewl.net/c3yq/cq3/cq3_win/",
+  "resVer": "?v=20260126144951",
+  "urlsuffix": "5.3.1_d",
+  "modData": [
+    {
+      "name": "996传奇3",
+      "operid": 1,
+      "id": "mod_chuanqi3",
+      "logo": "",
+      "srvlist": "{{SDK_BASE_URL}}/serverlist/serverlist3.json",
+      "winURL": "http://business-static.c3yq.huiyuewl.net/game_mubao/20210129/",
+      "noticeURL": "http://www.996m2.com",
+      "homeURL": "http://www.996m2.com",
+      "helpURL": "http://www.996m2.com",
+      "subMod": [
+        {
+          "name": "996传奇3-新框架",
+          "operid": 1,
+          "id": "sub_c3_new",
+          "srvlist": "{{SDK_BASE_URL}}/serverlist/serverlist3.json"
+        },
+        {
+          "name": "996传奇3",
+          "operid": 1,
+          "id": "mod_chuanqi3",
+          "srvlist": "{{SDK_BASE_URL}}/serverlist/serverlist3.json"
+        }
+      ]
+    }
+  ]
+}

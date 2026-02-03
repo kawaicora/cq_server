@@ -1,0 +1,47 @@
+
+
+{
+  "resURL_ad": "http://cdn.c3yq.huiyuewl.net/c3yq/cq3/cq3_and/",
+  "resURL_ios": "http://cdn.c3yq.huiyuewl.net/c3yq/cq3/cq3_ios/",
+  "resURL_win": "http://cdn.c3yq.huiyuewl.net/c3yq/cq3/cq3_win/",
+  "sceneURL": "http://cdn.c3yq.huiyuewl.net/c3yq/cq3/cq3_assets/",
+  "resVer": "?v=20260126144951",
+  "refer": "9562031",
+  "custom": {
+    "hideCopyright": 1,
+    "payNotifyUrl": "{{SDK_BASE_URL}}",
+    "svipAttrURL": "{{SDK_BASE_URL}}",
+    "svipURL": "{{SDK_BASE_URL}}/svip/game/v1/",
+    "announceUrl": "{{SDK_BASE_URL}}/notelist/note.json",
+    "RoleRecordDoamin": "{{SDK_BASE_URL}}",
+    "RoleRecordUpLoadDoamin": "{{SDK_BASE_URL}}",
+    "TradingBankDoamin": "{{SDK_BASE_URL}}",
+    "TradingBankPhoneDoamin": "{{SDK_BASE_URL}}",
+    "996BoxLogDoamin": "{{SDK_BASE_URL}}",
+    "996BoxDoamin": "{{SDK_BASE_URL}}",
+    "BaseDoamin": "{{SDK_BASE_URL}}",
+    "QRCodePayDoamin": "{{SDK_BASE_URL}}"
+  },
+  "serverGroup": [
+    {
+      "name": "抖音专区",
+      "tag": 1000090,
+        "hide": 0,
+        "name_color": "#007CFF",
+        "is_cut": 1
+    }
+  ],
+  "serverData": [
+    {
+      "tag": 2,
+      "srvip": "10.0.0.202",
+      "srvid": "9952014",
+      "srvname": "侠骨柔情",
+      "port": "7000",
+      "beta": "0",
+      "state": "3",
+      "urlsuffix": "5.3.1_d"
+    }
+  ],
+  "sceneResVer": "?v=20260126144951"
+}
