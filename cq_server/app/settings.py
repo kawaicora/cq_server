@@ -18,5 +18,5 @@ class DefaultConfig (object):
     TEMPLATES_AUTO_RELOAD = True # 模板自动加载
     SQLALCHEMY_ECHO = False # 是否开启SQLAlchemy的调试模式
     SQLALCHEMY_TRACK_MODIFICATIONS = False # 是否追踪对象的修改
-    PASSWORD_PRIVATE_KEY_FILE = "data/password_private_key.pem"
+
  
