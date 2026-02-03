@@ -1,7 +1,7 @@
 setuptools
 cffi
 xxtea-py
-dotenv
+pymysql
 flask[async]
 pyyaml
 flask_cors
@@ -16,3 +16,4 @@ pyodbc
 sqlacodegen
 qrcode
 loguru
+Pillow

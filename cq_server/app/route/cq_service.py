@@ -907,7 +907,7 @@ def my_games():
                 {
                     "box_game_id": 9762,
                     "game_logo_url": "https://static.dhsf.996box.com/box/logo/9762/658934efd28e4.png",
-                    "game_name": "四通传奇",
+                    "game_name": "传奇开发",
                     "game_tags": "三职业",
                     "game_version_name": "1.76",
                     "game_appid": 1,
