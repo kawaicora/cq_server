@@ -1,30 +1,4 @@
 {
-    "download_info": {
-        "game_appid": 1,
-        "name": "四通传奇内测",
-        "desc": "",
-        "exe": "cq.exe",
-        "version": "1.1.1",
-        "url": "https://static.dhsf.996box.com/box/Package/20250115_pc.zip",
-        "icoUrl": "https://static.dhsf.996box.com/box/logo/9762/658934efd28e4.png",
-        "cacheName": "cache_9762",
-        "dat_url": "https://static.dhsf.996box.com/box/Package/version_20250115.dat"
-    },
-    "download_info_client": {
-        "game_appid": 109762,
-        "name": "四通传奇内测",
-        "desc": "",
-        "exe": "cq.exe",
-        "version": "1.1.1",
-        "icon_name": "favicon.ico",
-        "url": "https://static.dhsf.996box.com/box",
-        "icoUrl": "https://static.dhsf.996box.com/box/logo/9762/658934efd28e4.png",
-        "cacheName": "cache_9762",
-        "game_type": "cq",
-        "server_list": "{{SDK_BASE_URL}}/box_serverlist/box_server_list.json",
-        "serverlist_spare": "",
-        "game_start_type": "pc"
-    },
     "start_info": {
               
         "channel":116298,

@@ -2,7 +2,6 @@ setuptools
 cffi
 xxtea-py
 
-
 pymysql
 flask[async]
 pyyaml
@@ -17,7 +16,6 @@ protobuf==3.19.0
 requests
 cryptography
 lupa
-python-telegram-bot
 eventlet
 rarfile
 gevent
@@ -26,7 +24,5 @@ sqlacodegen
 websocket-client
 cryptography
 resend
-certbot
-Pillow
 qrcode
 loguru

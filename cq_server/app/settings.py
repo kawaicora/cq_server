@@ -3,7 +3,7 @@ import os,sys
 class DefaultConfig (object):
 
     M2_SERVICE_ADDRESS = ("127.0.0.1",6999)
-    SDK_BASE_URL = "http://10.0.0.10:5500"
+    SDK_BASE_URL = "http://10.0.0.202:5500"
     M2_DATABASE  = (
         "mssql+pyodbc://sa:mssql_HPNwE4@127.0.0.1:1433/dhsf_stcq_9762_game_9306444_mdf?"
         "driver=ODBC+Driver+17+for+SQL+Server"
