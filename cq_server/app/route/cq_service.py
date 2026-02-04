@@ -78,12 +78,12 @@ def send_mail(role_id:str,sender_name:str,lable:str,memo:str,item:str=''):
         session.close()
     return -1
 
-def pay(server_id:str,account:str,role_id:str,amount:int,order_id:str,sdk_id:int=59098,draw_out:int = 0,ext_data:str=2,product_id:str="0",ext_id:int=2):
+def pay(server_id:str,account:str,role_id:str,amount:int,order_id:str,pay_id:str,sdk_id:int=59098,draw_out:int = 0,ext_data:str=2,product_id:str="0",ext_id:int=2):
     session: Session = SessionLocal()
     try:
    
         new_pay: Pay = Pay(
-            PayId=order_id,
+            PayId=pay_id,
             sGameOrder=order_id,
             sRoleId=role_id,
             Account=account,
@@ -112,12 +112,12 @@ def pay(server_id:str,account:str,role_id:str,amount:int,order_id:str,sdk_id:int
 
 
 
-def diypay(server_id:str,account:str,role_id:str,amount:int,order_id:str,sdk_id:int=59098,draw_out:int = 0,ext_data:str=2,product_id:str="0",ext_id:int=2):
+def diypay(server_id:str,account:str,role_id:str,amount:int,order_id:str,pay_id:str,sdk_id:int=59098,draw_out:int = 0,ext_data:str=2,product_id:str="0",ext_id:int=2):
     session: Session = SessionLocal()
     try:
    
         new_diypay : Diypay= Diypay(
-            PayId=order_id,
+            PayId=pay_id,
             sGameOrder=order_id,
             sRoleId=role_id,
             Account=account,
@@ -319,6 +319,7 @@ def handle_gm_diy_pay(data):
             role_id=userid,
             amount=int(data.get('amount')),
             order_id=c_order_id,
+            pay_id=CommonUtils.generate_uuid(True),
             sdk_id=sdkid
 
         )
@@ -341,6 +342,7 @@ def handle_gm_pay(data):
             server_id=serverid,
             account=account,
             role_id=userid,
+            pay_id=CommonUtils.generate_uuid(True),
             amount=int(data.get('amount')),
             order_id=c_order_id,
             sdk_id=sdkid
@@ -759,6 +761,7 @@ def api_pay_start_pay():
         order_id=order_no,
         account=order_data[order_no]["uid"],
         role_id=order_data[order_no]["role_id"],
+        pay_id=CommonUtils.generate_uuid(True),
         amount=order_data[order_no]["price"],
         server_id = order_data[order_no]["server_id"],
         ext_id=2 #元宝
@@ -809,6 +812,7 @@ def api_pay_finish_pay():
         order_id=order_no,
         account=order_data[order_no]["uid"],
         role_id=order_data[order_no]["role_id"],
+        pay_id=CommonUtils.generate_uuid(True),
         amount=order_data[order_no]["price"],
         server_id = order_data[order_no]["server_id"],
         ext_id=2 #元宝
@@ -824,6 +828,7 @@ def api_pay_postback():
     order_no = request.args.get("order_no")
     pay(
         order_id=order_no,
+        pay_id=CommonUtils.generate_uuid(True),
         account=order_data[order_no]["uid"],
         role_id=order_data[order_no]["role_id"],
         amount=order_data[order_no]["price"],
@@ -849,6 +854,7 @@ def api_mgw_pay():
         order_no = trade_no_json.get('out_trade_no')
         pay(
             order_id=order_no,
+            pay_id=CommonUtils.generate_uuid(True),
             account=order_data[order_no]["uid"],
             role_id=order_data[order_no]["role_id"],
             amount=order_data[order_no]["price"],

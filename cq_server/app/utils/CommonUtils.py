@@ -14,7 +14,7 @@ import random
 import smtplib
 from email.mime.text import MIMEText
 from email.header import Header
-
+import uuid
 
 from flask import Response
 
@@ -30,8 +30,16 @@ class CommonUtils:
             
             n=n+ str(random.randint(0,9))
         return n
+    @staticmethod
+    def generate_uuid(is_upper=False):
+        """生成全大写的UUID字符串（格式：8-4-4-4-12）"""
+        # 生成随机UUID对象（UUID4是最常用的随机UUID类型）
+        uuid_object = uuid.uuid4()
+        # 转换为字符串并将所有字母转为大写
+        if is_upper:
+            upper_uuid = str(uuid_object).upper()
+        return upper_uuid
 
-  
     @staticmethod
     def create_directory(path):
         """
