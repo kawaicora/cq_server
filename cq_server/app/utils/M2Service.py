@@ -1,8 +1,10 @@
 
 import json
 import socket
-
+from app.utils.LoggerManager import logger
 from app.settings import DefaultConfig
+# class DefaultConfig :
+#     M2_SERVICE_ADDRESS = ("127.0.0.1",61471)
 reload_id = {
     1:"重载物品表",
     2:"重载怪物表",
@@ -22,15 +24,15 @@ reload_id = {
     99:"重载所有NPC"
 }
 def send_tcp_data(data,address = DefaultConfig.M2_SERVICE_ADDRESS):
-    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client_socket.connect(address)
-    
     try:
+        client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        client_socket.connect(address)
         client_socket.send(data)
         data = client_socket.recv(1024)
         return data
     except Exception as e:
-        pass
+        logger.warning(e)
+        return ""
 
 def reload_gift_list():
     #重载礼包

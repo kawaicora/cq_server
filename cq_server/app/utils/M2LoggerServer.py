@@ -70,21 +70,25 @@ class M2LoggerServer(threading.Thread):
                 data = client_socket.recv(8192)
                 if not data:
                     break
-                # CommonUtils.hex_dump(logger.info,data)
+                CommonUtils.hex_dump(logger.info,data)
                 try:
-                    json_arr = self.decode_data_bin(data)
-                    for e in json_arr:
-                        # self.logger.info(f"{e['dCreateTime'].replace("\'","")}  {e['sReserve']}")
-                        log_content_update(f"{e['dCreateTime'].replace("\'","")}  {e['sReserve']}")
-                        CommonUtils.format_json_log(logger.info,e)
-                        message = [
-                            {
-                                'type':'text',
-                                'data':{
-                                    'text':f"{e['dCreateTime'].replace("\'","")}  {e['sReserve']}"
-                                }
-                            }
-                        ]
+
+                    # json_arr = self.decode_data_bin(data)
+                    # for e in json_arr:
+                    #     self.logger.info(f"{e['dCreateTime'].replace("\'","")}  {e['sReserve']}")
+                    #     log_content_update(f"{e['dCreateTime'].replace("\'","")}  {e['sReserve']}")
+                    #     CommonUtils.format_json_log(logger.info,e)
+                    #     message = [
+                    #         {
+                    #             'type':'text',
+                    #             'data':{
+                    #                 'text':f"{e['dCreateTime'].replace("\'","")}  {e['sReserve']}"
+                    #             }
+                    #         }
+                    #     ]
+                    data = self.decode_data_to_json(data)
+                    if data:
+                        log_content_update(json.dumps(data,ensure_ascii=False,indent=4))
                         # qqrobot.send_private_msg("2210048995",message =message)
                         # qqrobot.send_group_msg("179614827",message =message)
 
@@ -99,6 +103,101 @@ class M2LoggerServer(threading.Thread):
             self.logger.info(f"Connection with {client_address} closed")
 
 
+    def decode_data_to_json (self,data):
+        """
+        解析日志协议
+
+        协议:
+        [2字节 type]
+        [4字节 length]
+        [2字节 CRLF]
+        [5字节 logid]
+        [JSON]
+        [00结束]
+        """
+
+        if not data:
+            raise ValueError("数据为空")
+
+
+        # 最小包长度检查
+        if len(data) < 13:
+            raise ValueError(
+                f"数据长度不足: {len(data)}"
+            )
+
+
+        # 解析头
+        packet_type = int.from_bytes(
+            data[0:2],
+            "little"
+        )
+
+        packet_len = int.from_bytes(
+            data[2:6],
+            "little"
+        )
+
+
+        # 检查头部结束符
+        if data[6:8] != b'\x0A\x0D':
+            raise ValueError(
+                f"协议头错误: {data[6:8].hex(' ')}"
+            )
+
+
+        # JSON固定从第13字节开始
+        json_offset = 13
+
+
+        if len(data) <= json_offset:
+            raise ValueError(
+                "没有JSON数据"
+            )
+
+
+        json_bytes = data[json_offset:]
+
+
+        # 去除结束符
+        json_bytes = json_bytes.rstrip(b'\x00')
+
+
+        if not json_bytes.startswith(b'{'):
+            raise ValueError(
+                f"JSON起始错误 offset={json_offset}, "
+                f"data={json_bytes[:32].hex(' ')}"
+            )
+
+
+        try:
+            text = json_bytes.decode("gbk")
+
+        except UnicodeDecodeError as e:
+            raise ValueError(
+                f"GBK解码失败: {e}"
+            )
+
+
+        try:
+            obj = json.loads(text)
+
+        except json.JSONDecodeError as e:
+            # raise ValueError(
+            #     f"JSON解析失败: "
+            #     f"line={e.lineno}, "
+            #     f"col={e.colno}, "
+            #     f"pos={e.pos}, "
+            #     f"内容={text[:200]}"
+            # )
+            logger.warn(     f"JSON解析失败: "
+                             f"line={e.lineno}, "
+                             f"col={e.colno}, "
+                             f"pos={e.pos}, "
+                             f"内容={text[:200]}")
+            return None
+
+        return obj
     def decode_data_bin(self,data):
         # 定义JSON数据的起始标记和结束标记
         START_MARKER = b'04132'  # 对应字节 30 34 31 33 32

@@ -1,0 +1,95 @@
+
+{
+  "sceneUrlSuffix": "5.1.4",
+  "referArr": [],
+  "refer": "6666",
+  "serverGroup": [
+    {
+      "name": "测试新区",
+      "tag": 1,
+      "hide": 0,
+      "name_color": "#2D8CF0",
+      "is_cut": 1
+    }
+  ],
+  "serverData": [
+    {
+      "tag": 1,
+      "beta": 0,
+      "state": 3,
+      "srvid": 1,
+      "srvname": "工具测试1服",
+      "srvip": "127.0.0.1",
+      "port": 7000,
+      "urlsuffix": "5.40.3",
+      "WClientUrl": ""
+    },
+    {
+      "tag": 1,
+      "beta": 0,
+      "state": 3,
+      "srvid": 2,
+      "srvname": "工具测试2服",
+      "srvip": "127.0.0.1",
+      "port": 7001,
+      "urlsuffix": "5.40.3",
+      "WClientUrl": ""
+    },
+    {
+      "tag": 1,
+      "beta": 0,
+      "state": 3,
+      "srvid": 3,
+      "srvname": "工具测试3服",
+      "srvip": "127.0.0.1",
+      "port": 7002,
+      "urlsuffix": "5.40.3",
+      "WClientUrl": ""
+    }
+  ],
+  "srvRoot": "489_2.c3yq.zqltc.cn",
+  "custom": {
+    "hideCopyright": 1,
+    "announceUrl": "",
+    "hideRecharge": 0,
+    "ignoreLoginBg": 0,
+    "hotSizeWifi": "200",
+    "hotSize4G": "200",
+    "shareUrl": "",
+    "sceneURL": "",
+    "checkCodeUrl": "http://code.dhsf.xqhuyu.com/check_code.php",
+    "agetipsImage": {
+      "visible": 1,
+      "clickTips": "1）本游戏是一款难度适中的大型多人在线角色扮演类游戏，适用于18周岁及以上的用户，建议未成年人在家长监护下使用游戏产品。\n2）本游戏的故事发生在物资丰饶的神秘土地玛法大陆上，玩家化作勇士共同抵御怪物和保卫家园，剧情叙事饱满，具有传奇色彩。游戏有丰富多样的玩法，包含角色养成、竞技等，需要投入一定的时间和精力。游戏中有基于语言和文字的陌生人社交系统，但社交系统的管理遵循相关法律法规。\n3）本游戏中有用户防沉迷、实名认证系统，未进行实名认证或实名认证为未成年人的用户将被禁止登陆游戏\n4）游戏提供了丰富的社交系统，玩家之间可以互相交流、互相配合。共同完成游戏任务，有利于促进玩家的社会交流，维持良好的社会群关系，更有良性竞争模块，带给玩家积极向上的情绪，能够增强玩家的自信心。"
+    },
+    "copyright1": "著作权人 : 杭州慧跃网络科技有限公司 著作权登记号 : 2021SR2181933 审批文号 : 新广出审[2017] 10363号",
+    "copyright2": "出版单位名称 : 上海同济大学电子音像出版社有限公司 出版物号 : ISBN 978-7-498-03150-1",
+    "agetips": "适龄提示：适合18岁以上使用"
+  },
+  "whitelist": [
+    "61.130.11.178",
+    "122.224.130.106",
+    "116.62.26.133",
+    "183.131.177.101",
+    "115.231.16.101"
+  ],
+  "gmResVer": "?v=20260728145911",
+  "gmResURL": "http://cdn.c3yqcs.vkcgd.cn/custom/489_2/hotupdate/",
+  "gmWebResURL": "http://cdn.c3yqcs.vkcgd.cn/custom/489_2/webres/",
+  "gmWebResVer": "?v=20260728145911",
+  "gmInitResURL": "http://cdn.c3yqcs.vkcgd.cn/custom/489_2/inithotupdate/",
+  "gmInitResVer": "?v=20260728145911",
+  "sceneURL": "http://cdn.c3yqcs.vkcgd.cn/c3yqcs/cq3/cq3_assets/",
+  "sceneResVer": "?v=20260728145911",
+  "resURL": "http://cdn.c3yqcs.vkcgd.cn/c3yqcs/cq3/cq3_and/",
+  "resVer": "?v=20260728145911",
+  "resVer_h5": "?v=20260728145911",
+  "resURL_h5": "//cdn.c3yqcs.vkcgd.cn/h5office/",
+  "resURL_ad": "http://cdn.c3yqcs.vkcgd.cn/c3yqcs/cq3/cq3_and/",
+  "resURL_ios": "http://cdn.c3yqcs.vkcgd.cn/c3yqcs/cq3/cq3_ios/",
+  "resURL_win": "http://cdn.c3yqcs.vkcgd.cn/c3yqcs/cq3/cq3_win/",
+  "gmResURL_h5": "//cdn.c3yqcs.vkcgd.cn/489_2/",
+  "gmResVer_h5": "?v=20260728145911",
+  "sceneURL_cocosh5": "https://cdnh5.c3yq.huiyuewl.net/c3yq/cq3_h5_assets/",
+  "resURL_cocosh5": "https://cdnh5.c3yq.huiyuewl.net/c3yq/cq3_h5/"
+}

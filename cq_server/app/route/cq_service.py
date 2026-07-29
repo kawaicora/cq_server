@@ -1,14 +1,12 @@
 # -*- coding:utf-8 -*-
-import mimetypes
+from io import BytesIO
 import shutil
-import time
 from app.utils.LoggerManager import logger
 import qrcode
 from qrcode.image.styledpil import StyledPilImage
 from PIL import Image
 import urllib.parse
 
-import requests
 from app.route import bp
 
 from flask import *
@@ -18,23 +16,14 @@ from app.utils.CommonUtils import CommonUtils
 from app.utils.ErrorCode import get_response_string,get_response_json
 from app.extensions import socketio
 from app.settings import DefaultConfig
-from decimal import Decimal
-from sqlalchemy import create_engine
-from sqlalchemy.orm import Session
-from sqlalchemy.orm import sessionmaker
-from app.sql_class.Legend import TBLBOXSELL, TBLCHARACTER, Pay,Diypay,TBLMAIL,t_TBL_CONFIG
 from datetime import datetime
 from app.utils.M2Service import *
+from  app.utils.M2DBUtils import get_account_by_userid
+from  app.utils.M2DBUtils import get_jobid_by_userid, get_jobname_by_jobid, get_recharge_config_by_tblconfig, get_sdk_id_by_userid
+from  app.utils.M2DBUtils import get_server_id_by_userid, get_server_name, get_user_level_by_userid, get_userid_by_character, send_mail
+from  app.utils.M2DBUtils import update_recharge_config_by_region,fix_pre_order,fix_pre_diy_order,add_diypay,add_pay
 order_data = {}
 
-
-# 创建连接
-
-
-
-engine = create_engine(DefaultConfig.M2_DATABASE)
-# 创建会话工厂
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 def verify_user(token):
     # t_account = Account.query.filter_by(login_token=token).first()
@@ -47,182 +36,47 @@ def log_content_update(data):
     return
 
 
-def send_mail(role_id:str,sender_name:str,lable:str,memo:str,item:str=''):
-    if isinstance(item,dict) or isinstance(item,list):
-        item = json.dumps(item,ensure_ascii=False)
-    session: Session = SessionLocal()
+def pay(account:str,role_id:str):
+    logger.info("发送支付通知")
+    send_pay_notify(account,role_id)
+    return 0
 
-    try:
-        new_tblmail = TBLMAIL(
-            UserID=role_id,
-            SendName=sender_name,
-            Type=Decimal(0),
-            Lable=lable,
-            Memo=memo,
-            Item=item,
-            dCreateTime=datetime.now(),
-            RecvFlag = Decimal(0),
-            ReadFlag = Decimal(0),
-            Deleted = Decimal(0)
-        )
-    # 自动开始事务
-        session.add(new_tblmail)
-        session.commit()  # 自动flush + commit
-        mail_notify(role_id)
-        return 0
+
+
+def diypay(role_id:str):
     
-    except Exception as e:
-        session.rollback()
-        # logger.info(f"插入失败: {str(e)}")
-    finally:
-        session.close()
-    return -1
+    logger.info("发送DIY支付通知")
+    send_diy_pay_notify(role_id)
 
-def pay(server_id:str,account:str,role_id:str,amount:int,order_id:str,pay_id:str,sdk_id:int=59098,draw_out:int = 0,ext_data:str=2,product_id:str="0",ext_id:int=2):
-    session: Session = SessionLocal()
+
+
+
+def pay_ex(order_no):
     try:
-   
-        new_pay: Pay = Pay(
-            PayId=pay_id,
-            sGameOrder=order_id,
-            sRoleId=role_id,
-            Account=account,
-            SdkId=sdk_id,
-            ServerId=server_id,
-            ProductId=product_id,
-            Gold=Decimal(amount),  # 必须使用Decimal类型
-            nRealGold=Decimal(amount),
-            ExtData=ext_data,
-            DrawOut=draw_out, #抽取状态 新订单为 0 不要设置DrawLevel和DrawDate
-            CreateTime=datetime.now(),
-            nExtid=ext_id, #货币ID
-        )
-        # 自动开始事务
-        session.add(new_pay)
-        session.commit()  # 自动flush + commit
-        send_pay_notify(account,role_id)
-        return 0
-    
-    except Exception as e:
-        session.rollback()
-        # logger.info(f"插入失败: {str(e)}")
-    finally:
-        session.close()
-    return -1
-
-
-
-def diypay(server_id:str,account:str,role_id:str,amount:int,order_id:str,pay_id:str,sdk_id:int=59098,draw_out:int = 0,ext_data:str=2,product_id:str="0",ext_id:int=2):
-    session: Session = SessionLocal()
-    try:
-   
-        new_diypay : Diypay= Diypay(
-            PayId=pay_id,
-            sGameOrder=order_id,
-            sRoleId=role_id,
-            Account=account,
-            SdkId=sdk_id,
-            ServerId=server_id,
-            ProductId=product_id,
-            Gold=Decimal(amount),  # 必须使用Decimal类型
-            ExtData=ext_data,
-            DrawOut=draw_out, #抽取状态 新订单为 0 不要设置DrawLevel和DrawDate
-            CreateTime=datetime.now(),
-            nExtid=ext_id, #货币ID
-        )
-        # 自动开始事务
-        session.add(new_diypay)
-        session.commit()  # 自动flush + commit
-        send_diy_pay_notify(role_id)
-        return 0
-    
-    except Exception as e:
-        session.rollback()
-        # logger.info(f"插入失败: {str(e)}")
-    finally:
-        session.close()
-    return -1
-
-# 2. 按 sRegionServerName 更新 recharge_config 的函数
-def update_recharge_config_by_region(region_server_name: str, new_recharge_config: list[dict[str, Any]]):
-    """
-    根据服务器名称更新充值配置
-    :param region_name: 目标服务器名称（对应 sRegionServerName 字段）
-    :param new_recharge_config: 新的充值配置（字符串格式，建议 JSON 串）
-    :return: 是否更新成功
-    """
-    db: Session = SessionLocal()
-    try:
-        # 定位目标记录：按 sRegionServerName 精确匹配
-        target_config = db.query(t_TBL_CONFIG).filter(
-            t_TBL_CONFIG.sRegionServerName == region_server_name
-        ).first()
-
-        if not target_config:
-            logger.info(f"错误：未找到服务器名称为「{region_server_name}」的配置记录")
-            return False
-
-        # 更新 recharge_config 字段
-        target_config.recharge_config = new_recharge_config
-        # 可选：更新最后修改时间（若表中有对应字段，如 AddTime/UpdateTime）
-        # target_config.UpdateTime = datetime.now()
-
-        db.commit()  # 提交修改
-        db.refresh(target_config)  # 刷新实例，获取最新数据
-        logger.info(f"成功：服务器「{region_server_name}」的充值配置已更新")
+        trade_no = order_data.get(order_no).get("trade_no")
+        fix_pre_order(order_no)
+        sdk_id = get_sdk_id_by_userid(order_data[order_no]["role_id"])
+        pay(
+            account=order_data[order_no]["uid"],
+            role_id=order_data[order_no]["role_id"]
+            ) 
         return True
-
-    except Exception as e:
-        db.rollback()  # 出错回滚，避免数据不一致
-        logger.info(f"失败：更新充值配置时出错 - {str(e)}")
+    except:
         return False
 
-    finally:
-        db.close()  # 无论成功与否，关闭会话
-
-def add_tbl_config(region_server_name: str):
-    session = SessionLocal()
+        
+def diypay_ex(order_no):
     try:
-        json_recharge_config: list[dict[str, Any]]= [
-            {
-                "currency_name":"元宝",
-                "currency_ratio":10,
-                "currency_itemid":2,
-                "present_deploy":[],
-                "point_deploy":[],
-                "present_ratio":"",
-                "per_pay_present":[]
-            }
-        ]
-        json_serconfig = {
-            "maxitemlog":1000,
-            "maxdummy":50,
-            "createservertime":1748658649,
-            "testservertime":1748660400,
-            "startservertime":1748664000,
-            "limitchat":0,
-            "limitjob":0
-        }
-        
-        # 实例化配置记录（按需设置字段值，未设置的字段将使用默认值）
-        new_config = t_TBL_CONFIG(
-            StartTime=datetime.datetime.now(),  # 当前时间
-            recharge_config=json.dumps(json_recharge_config),  # 充值配置（JSON字符串）
-            Regis=0,  # 非空字段，必须赋值
-            sRegionServerName=region_server_name,
-            FLD_SERCONFIG = json.dumps(json_serconfig)
-            
-        )
-        
-        # 添加到会话并提交
-        session.add(new_config)
-        session.commit()
-        
-    except Exception as e:
-        pass
-
-
-
+        trade_no = order_data.get(order_no).get("trade_no")
+        fix_pre_diy_order(order_no)
+        sdk_id = get_sdk_id_by_userid(order_data[order_no]["role_id"])
+        diypay(
+                account=order_data[order_no]["uid"],
+                role_id=order_data[order_no]["role_id"],
+            )
+        return True
+    except:
+        return False
 
     
 
@@ -246,52 +100,7 @@ def view_game_manager():
         return response
     else:
         return get_response_string(-1)
-def get_userid_by_character(character: str) -> str | None:
-    session = SessionLocal()
-    try:
-        result = session.query(TBLCHARACTER.FLD_USERID) \
-            .filter(TBLCHARACTER.FLD_CHARACTER == character) \
-            .first()
-        session.close()
-        return result[0] if result else None
-    except Exception as e:
-        return None
-     
-def get_account_by_userid(user_id: str) -> str | None:
-    """通过用户ID从 TBL_CHARACTER 表中查询 FLD_ACCOUNT"""
-    session = SessionLocal()
-    try:
-        result = session.query(TBLCHARACTER.FLD_ACCOUNT) \
-            .filter(TBLCHARACTER.FLD_USERID == user_id) \
-            .first()
-        session.close()
-        return result[0] if result else None
-    except :
-        return None
     
-def get_server_id_by_userid(user_id: str) -> str | None:
-    """通过用户ID从 TBL_CHARACTER 表中查询 FLD_SERVERID"""
-    session = SessionLocal()
-    try:
-        result = session.query(TBLCHARACTER.FLD_SERVERID) \
-            .filter(TBLCHARACTER.FLD_USERID == user_id) \
-            .first()
-        session.close()
-        return result[0] if result else None
-    except :
-        return None
-    
-def get_sdk_id_by_userid(user_id: str) -> str | None:
-    """通过用户ID从 TBL_CHARACTER 表中查询 FLD_SDKID"""
-    session = SessionLocal()
-    try:
-        result = session.query(TBLCHARACTER.FLD_SDKID) \
-            .filter(TBLCHARACTER.FLD_USERID == user_id) \
-            .first()
-        session.close()
-        return result[0] if result else None
-    except :
-        return None
     
 @socketio.on('load_button_config')
 def handle_load_button_config():
@@ -304,53 +113,120 @@ def handle_reload_m2_config(data):
     socketio.emit('execute_ret',{'code':0,'msg':'ok','action':'reload_m2_config','data':result})
 @socketio.on('gm_diy_pay')
 def handle_gm_diy_pay(data):
-    c_order_id = secrets.token_hex(16)
+    pay_id = CommonUtils.gen_pay_id(True)
+    order_no = CommonUtils.generate_uuid(True)
     userid =  get_userid_by_character(data.get('charater'))
     if not userid :
         socketio.emit('execute_ret',{'code':-1,'msg':'fail','action':'gm_diy_pay'})
         return
     account = get_account_by_userid(userid)
+    if not account:
+        socketio.emit('execute_ret',{'code':-1,'msg':'fail','action':'gm_pay'})
+        return
     serverid = get_server_id_by_userid(userid)
-    sdkid = get_sdk_id_by_userid(userid)
-    if account:
-        diypay(
-            server_id=serverid,
-            account=account,
-            role_id=userid,
-            amount=int(data.get('amount')),
-            order_id=c_order_id,
-            pay_id=CommonUtils.generate_uuid(True),
-            sdk_id=sdkid
+    recharge_config =  get_recharge_config_by_tblconfig()
+    recharge_config_json = json.loads(recharge_config)
+    trade_no = {
+        "productId":recharge_config_json.get("currency_itemid"),
+        "productName":recharge_config_json.get("currency_name"),
+        "gameid":1,
+        "channelid":"1",
+        "payway":"GM",
+        "productValue":int(data.get('amount')) * recharge_config_json.get("currency_ratio"),
+        "price":int(data.get('amount')),
+        "OrderNo":order_no
+    }
+    jobid = get_jobid_by_userid(userid)
+    jobname = get_jobname_by_jobid(jobid)
+    pay_data = {
+        "job_id": jobid,
+        "job_name": jobname,
+        "price": data.get('amount'),
+        "prod_name": recharge_config_json.get("currency_name"),
+        "promote_id": "1",
+        "props_name": recharge_config_json.get("currency_name"),
+        "role_id": userid,
+        "role_level": str(get_user_level_by_userid(userid)),
+        "role_name": data.get('charater'),
+        "server_id": serverid,
+        "server_name": get_server_name(),
+        "trade_no": order_no,
+        "uid": account,
+        "pay_id":pay_id
+        
+    }
+    CommonUtils.format_json_log(logger.info,pay_data)
+    add_diypay(
+        server_id=serverid,
+        account=account,
+        role_id=userid,
+        amount=data.get('amount'),
+        order_id=order_no,
+        pay_id=pay_id
 
-        )
-        socketio.emit('execute_ret',{'code':0,'msg':'ok','action':'gm_diy_pay'})
-    else:
-        socketio.emit('execute_ret',{'code':-1,'msg':'fail','action':'gm_diy_pay'})
+    )
+    order_data[order_no] = pay_data
+    diypay_ex(order_no)
+    socketio.emit('execute_ret',{'code':0,'msg':'ok','action':'gm_diy_pay'})
     
 @socketio.on('gm_pay')
 def handle_gm_pay(data):
-    c_order_id = secrets.token_hex(16)
+    pay_id = CommonUtils.gen_pay_id(True)
+    order_no = CommonUtils.generate_uuid(True)
     userid =  get_userid_by_character(data.get('charater'))
     if not userid :
         socketio.emit('execute_ret',{'code':-1,'msg':'fail','action':'gm_pay'})
         return
     account = get_account_by_userid(userid)
-    serverid = get_server_id_by_userid(userid)
-    sdkid = get_sdk_id_by_userid(userid)
-    if account:
-        pay(
-            server_id=serverid,
-            account=account,
-            role_id=userid,
-            pay_id=CommonUtils.generate_uuid(True),
-            amount=int(data.get('amount')),
-            order_id=c_order_id,
-            sdk_id=sdkid
-
-        )
-        socketio.emit('execute_ret',{'code':0,'msg':'ok','action':'gm_pay'})
-    else:
+    if not account:
         socketio.emit('execute_ret',{'code':-1,'msg':'fail','action':'gm_pay'})
+        return
+    serverid = get_server_id_by_userid(userid)
+    recharge_config =  get_recharge_config_by_tblconfig()
+    recharge_config_json = json.loads(recharge_config)[0]
+    trade_no = {
+        "productId":recharge_config_json.get("currency_itemid"),
+        "productName":recharge_config_json.get("currency_name"),
+        "gameid":1,
+        "channelid":"1",
+        "payway":"GM",
+        "productValue":int(data.get('amount')) * recharge_config_json.get("currency_ratio"),
+        "price":int(data.get('amount')),
+        "OrderNo":order_no
+    }
+    jobid = get_jobid_by_userid(userid)
+    jobname = get_jobname_by_jobid(jobid)
+    pay_data = {
+        "job_id": jobid,
+        "job_name": jobname,
+        "price": data.get('amount'),
+        "prod_name": recharge_config_json.get("currency_name"),
+        "promote_id": "1",
+        "props_name": recharge_config_json.get("currency_name"),
+        "role_id": userid,
+        "role_level": str(get_user_level_by_userid(userid)),
+        "role_name": data.get('charater'),
+        "server_id": serverid,
+        "server_name": get_server_name(),
+        "trade_no": order_no,
+        "uid": account,
+        "pay_id":pay_id
+        
+    }
+    add_pay(
+        server_id=serverid,
+        account=account,
+        role_id=userid,
+        amount=data.get('amount'),
+        order_id=order_no,
+        pay_id=pay_id
+    )
+    CommonUtils.format_json_log(logger.info,pay_data)
+    order_data[order_no] = pay_data
+
+    pay_ex(order_no)
+    socketio.emit('execute_ret',{'code':0,'msg':'ok','action':'gm_pay'})
+
 
 
 # 更新服务器充值配置
@@ -481,7 +357,7 @@ def enter_game_client():
 
 def modlist_v1(config_path: str):
     current_app.logger.info(f"config_path: {config_path}")
-    if "modlist3" in config_path:
+    if "modlist_tool_489.txt" in config_path:
 
         # current_app.logger.info(f"传奇版本:{ver}")
         json_data= {
@@ -613,11 +489,13 @@ def pay_type():
 @bp.route("/api/pay/orderPlace",methods=['POST'])
 def order_place():
     req_json = request.form.to_dict()
-    CommonUtils.format_json_log(current_app.logger.info,req_json)
-    order_no = CommonUtils.gen_order_no()
     
+    trade_no = req_json.get("trade_no")
+    order_no = trade_no
+    pay_id = CommonUtils.gen_pay_id(True)
+    req_json["pay_id"] = pay_id
     biz_cotent  = {
-        "out_trade_no": order_no,
+        "out_trade_no": trade_no,
         "total_amount": str(req_json.get('price')),
         "subject": "游戏充值|谨防诈骗|慧跃（为m**oe充值）",
         "product_code": "QUICK_MSECURITY_PAY",
@@ -666,31 +544,39 @@ def order_place():
             "ts": int(datetime.now().timestamp()*1000),
             "data":{
                 "order":order_no,
-                "qr_code":f"{DefaultConfig.SDK_BASE_URL}/api/pay/finishPay?order_no={order_no}".replace("http://","https://"),
+                "qr_code":f"{DefaultConfig.SDK_BASE_URL}/api/pay/finishPay?order_no={order_no}",
                 "order_no":order_no,
                 "status":1
             }
         }
-    order_data[rsp_json_data["data"]["order_no"]] = req_json
-    create_qr_code(f"{DefaultConfig.SDK_BASE_URL}/api/pay/finishPay?order_no={order_no}".replace("http://","http://"),f"static/upload/qrcode/{order_no}.jpg")
+    req_json["pay_url"] = f"{DefaultConfig.SDK_BASE_URL}/api/pay/finishPay?order_no={order_no}"
+    CommonUtils.format_json_log(current_app.logger.info,req_json)
+    qrcode_data = create_qr_code(req_json["pay_url"])
+    req_json["qrcode_data"] = qrcode_data
+    order_data[order_no] = req_json 
     return CommonUtils.json_response(rsp_json_data)
 
-def create_qr_code(url, output_file=None, error_correction=qrcode.constants.ERROR_CORRECT_M, 
+def create_qr_code(url, error_correction=qrcode.constants.ERROR_CORRECT_M, 
                    box_size=10, border=4, fill_color="black", back_color="white", 
-                   logo_path=None,):
+                   logo_path=None):
     """
-    生成QR码
+    生成QR码并返回二进制数据（替代保存文件）
     
     参数:
     url (str): 需要编码的URL
-    output_file (str, optional): 输出文件名。默认为None。
     error_correction (int, optional): 纠错级别。默认为ERROR_CORRECT_M。
     box_size (int, optional): 每个QR码单元的大小。默认为10。
     border (int, optional): QR码边框大小。默认为4。
     fill_color (str, optional): QR码填充颜色。默认为"black"。
     back_color (str, optional): QR码背景颜色。默认为"white"。
     logo_path (str, optional): 要添加到QR码中心的logo图片路径。默认为None。
+    
+    返回:
+    bytes: 二维码图像的二进制数据（PNG格式）
     """
+    # 校验URL参数（增加健壮性）
+    if not isinstance(url, str) or len(url.strip()) == 0:
+        raise ValueError("URL参数不能为空字符串")
     # 创建QR码对象
     qr = qrcode.QRCode(
         version=1,
@@ -698,14 +584,11 @@ def create_qr_code(url, output_file=None, error_correction=qrcode.constants.ERRO
         box_size=box_size,
         border=border,
     )
-    
     # 添加数据到QR码
-    qr.add_data(url)
+    qr.add_data(url.strip())
     qr.make(fit=True)
-    
     # 创建QR码图像
     img = qr.make_image(image_factory=StyledPilImage, fill_color=fill_color, back_color=back_color)
-    
     # 如果提供了logo路径，将logo添加到QR码中心
     if logo_path:
         try:
@@ -723,51 +606,36 @@ def create_qr_code(url, output_file=None, error_correction=qrcode.constants.ERRO
             # 将logo粘贴到QR码上
             img.paste(logo, pos)
         except Exception as e:
-            logger.info(f"警告: 无法添加logo - {str(e)}")
+            logger.warning(f"警告: 无法添加logo - {str(e)}")
+    # 核心修改：将图像写入内存缓冲区（BytesIO），而非直接保存到文件
+    buffer = BytesIO()
+    # 保存为PNG格式（二维码常用格式，支持透明/颜色）
+    img.save(buffer, format='PNG')
+    # 将缓冲区指针重置到开头，确保读取完整数据
+    buffer.seek(0)
+    # 获取二进制数据
+    qr_bytes = buffer.getvalue()
+    # 关闭缓冲区（释放资源）
+    buffer.close()
     
-    # 保存QR码图像
-    if output_file:
-        img.save(output_file)
-        logger.info(f"QR码已保存到: {output_file}")
+    # 返回二维码二进制数据
+    return qr_bytes
 
 @bp.route("/api/pay/getUserQrcode", methods=['GET'])  # 返回图片PNG二进制数据
 def get_user_qrcode():
     order = request.args.get("order")
     order_no = request.args.get("order_no")
-    
     if not order_no:
         return Response("Missing 'order_no' parameter", status=400)
-    
-    try:
-        # 安全构建文件路径，避免目录遍历攻击
-        # from werkzeug.utils import secure_filename
-        # filename = secure_filename()
-        filename = f"static/upload/qrcode/{order_no}.jpg"
-        with open(filename, "rb") as fp:
-            # 自动检测MIME类型
-            mimetype, _ = mimetypes.guess_type(filename)
-            return Response(fp.read(), mimetype=mimetype)
-    except FileNotFoundError:
-        return Response("QR code not found", status=404)
-    except Exception as e:
-        return Response(f"An error occurred: {str(e)}", status=500)
+    order_data.get(order_no).get("qrcode_data")
+    return Response(order_data.get(order_no).get("qrcode_data"), mimetype="image/png")
+
     
 @bp.route("/api/pay/startPay", methods=['GET','POST'])
 def api_pay_start_pay():
-    order = request.args.get("order")
     order_no = request.args.get("order_no")
-    
-    pay(
-        order_id=order_no,
-        account=order_data[order_no]["uid"],
-        role_id=order_data[order_no]["role_id"],
-        pay_id=CommonUtils.generate_uuid(True),
-        amount=order_data[order_no]["price"],
-        server_id = order_data[order_no]["server_id"],
-        ext_id=2 #元宝
-        ) 
-    response = make_response(
-"""
+    pay_ex(order_no=order_no)
+    response = make_response("""
 <!DOCTYPE html>
 <html>
 <head lang="en">
@@ -807,16 +675,7 @@ def api_pay_start_pay():
 @bp.route("/api/pay/finishPay", methods=['GET','POST'])
 def api_pay_finish_pay():
     order_no = request.args.get("order_no")
-    
-    pay(
-        order_id=order_no,
-        account=order_data[order_no]["uid"],
-        role_id=order_data[order_no]["role_id"],
-        pay_id=CommonUtils.generate_uuid(True),
-        amount=order_data[order_no]["price"],
-        server_id = order_data[order_no]["server_id"],
-        ext_id=2 #元宝
-        ) 
+    pay_ex(order_no=order_no)
     
     response = make_response(render_template("pay_finish.html"),200)
     response.headers['X-Organization'] = 'Nintendo'
@@ -826,15 +685,7 @@ def api_pay_finish_pay():
 @bp.route('/api/pay/postback',methods=['GET','POST'])
 def api_pay_postback():
     order_no = request.args.get("order_no")
-    pay(
-        order_id=order_no,
-        pay_id=CommonUtils.generate_uuid(True),
-        account=order_data[order_no]["uid"],
-        role_id=order_data[order_no]["role_id"],
-        amount=order_data[order_no]["price"],
-        server_id = order_data[order_no]["server_id"],
-        ext_id=2 #元宝
-        ) 
+    pay_ex(order_no=order_no)
     return CommonUtils.json_response(default_ok)
 
 
@@ -849,18 +700,11 @@ def api_mgw_pay():
         msp_param_decoded = urllib.parse.unquote(msp_param)
         msp_param_json = CommonUtils.para_to_dict(msp_param_decoded)
         t = msp_param_json.get('trade_no')
-        trade_no_json= json.loads(t)
+        trade_no = request.args.get("order_no").get("trade_no")
+        trade_no_json = json.loads(trade_no)
         CommonUtils.format_json_log(current_app.logger.info,trade_no_json)
         order_no = trade_no_json.get('out_trade_no')
-        pay(
-            order_id=order_no,
-            pay_id=CommonUtils.generate_uuid(True),
-            account=order_data[order_no]["uid"],
-            role_id=order_data[order_no]["role_id"],
-            amount=order_data[order_no]["price"],
-            server_id = order_data[order_no]["server_id"],
-            ext_id=2 #元宝
-            ) 
+        pay_ex(order_no=order_no)
         response = make_response(render_template("pay_finish.html"),200)
         response.headers['X-Organization'] = 'Nintendo'
         return response

@@ -28,7 +28,7 @@
     "start_info": {
         "channel": "59098",
         "gm": "0",
-        "signkey": "a894020c3b61b34d1270bcdb45926d98",
+        "signkey": "634eff98723b31da43ed35f0dd4edf36",
         "resolution": "",
         "serverId": "",
         "cacheName": "cache_9762",
@@ -42,7 +42,7 @@
         "gameListUrl": "https://h5qfdt.996box.com/",
         "isPortrait": 0,
         "boxVersion": "4.4.2.6117",
-        "loadingAuthor": "推广商:四通网络"
+        "loadingAuthor": ""
     },
     "config_name": "env.json",
     "first_play_game": 0

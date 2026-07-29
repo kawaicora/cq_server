@@ -9,14 +9,14 @@
   },
   "modData": [
     {
-      "name": "零食大礼包",
+      "name": "测试游戏1",
       "operid": 1,
       "id": "mod_chuanqi3",
       "logo": {
         "url": "",
         "name": "489_1785221951"
       },
-      "srvlist": "http://list.dhsf.xqhuyu.com/testserverlist/serverlist_tool_7819.txt",
+      "srvlist": "https://list-dev.c3yq.huiyuewl.net/testserverlist/serverlist_tool_489.txt",
       "winURL": "http://business-static.c3yq.huiyuewl.net/game_mubao/20210129/",
       "noticeURL": "http://www.996m2.com",
       "homeURL": "http://www.996m2.com",
@@ -29,20 +29,20 @@
       "UpgradeSetting": "",
       "subMod": [
         {
-          "name": "零食大礼包",
+          "name": "测试游戏1",
           "operid": 1,
           "id": "mod_fgcq1",
-          "srvlist": "{{SDK_BASE_URL}}/serverlist/serverlist3.json",
+          "srvlist": "https://list-dev.c3yq.huiyuewl.net/testserverlist/serverlist_tool_489.txt",
           "logo": {
             "url": "",
-            "name": "7819_1784886707"
+            "name": "489_1785221951"
           }
         }
       ]
     }
   ],
   "data": [
-    "{{SDK_BASE_URL}}/serverlist/serverlist3.json"
+    "http://list-dev.c3yq.huiyuewl.net/testmodlist/modlist_tool_489.txt"
   ],
   "resURL": "http://cdn.c3yqcs.vkcgd.cn/c3yqcs/cq3/cq3_and/",
   "resURL_ad": "http://cdn.c3yqcs.vkcgd.cn/c3yqcs/cq3/cq3_and/",

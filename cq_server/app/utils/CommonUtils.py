@@ -24,11 +24,13 @@ T = TypeVar("T")
 class CommonUtils:
     
     @staticmethod
-    def gen_order_no():
+    def gen_pay_id(is_upper=False):
         n = "JAF"
         for i in range(28):
             
             n=n+ str(random.randint(0,9))
+        if is_upper:
+            n = str.upper(n)
         return n
     @staticmethod
     def generate_uuid(is_upper=False):

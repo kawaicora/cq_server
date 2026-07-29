@@ -1,12 +1,9 @@
 
 
 {
-  "resURL_ad": "http://cdn.c3yq.huiyuewl.net/c3yq/cq3/cq3_and/",
-  "resURL_ios": "http://cdn.c3yq.huiyuewl.net/c3yq/cq3/cq3_ios/",
-  "resURL_win": "http://cdn.c3yq.huiyuewl.net/c3yq/cq3/cq3_win/",
-  "sceneURL": "http://cdn.c3yq.huiyuewl.net/c3yq/cq3/cq3_assets/",
-  "resVer": "?v=20260126144951",
-  "refer": "9562031",
+  "sceneUrlSuffix": "5.1.4",
+  "referArr": [],
+  "refer": "6666",
   "custom": {
     "hideCopyright": 1,
     "payNotifyUrl": "{{SDK_BASE_URL}}",
@@ -34,14 +31,33 @@
   "serverData": [
     {
       "tag": 2,
-      "srvip": "10.0.0.202",
-      "srvid": "9952014",
-      "srvname": "侠骨柔情",
+      "srvip": "10.0.0.125",
+      "srvid": "9952015",
+      "srvname": "猫猫服",
       "port": "7000",
       "beta": "0",
       "state": "3",
-      "urlsuffix": "5.3.1_d"
+      "urlsuffix": "5.40.3"
     }
   ],
-  "sceneResVer": "?v=20260126144951"
+
+  "gmResVer": "?v=20260728145911",
+  "gmResURL": "http://cdn.c3yqcs.vkcgd.cn/custom/489_2/hotupdate/",
+  "gmWebResURL": "http://cdn.c3yqcs.vkcgd.cn/custom/489_2/webres/",
+  "gmWebResVer": "?v=20260728145911",
+  "gmInitResURL": "http://cdn.c3yqcs.vkcgd.cn/custom/489_2/inithotupdate/",
+  "gmInitResVer": "?v=20260728145911",
+  "sceneURL": "http://cdn.c3yqcs.vkcgd.cn/c3yqcs/cq3/cq3_assets/",
+  "sceneResVer": "?v=20260728145911",
+  "resURL": "http://cdn.c3yqcs.vkcgd.cn/c3yqcs/cq3/cq3_and/",
+  "resVer": "?v=20260728145911",
+  "resVer_h5": "?v=20260728145911",
+  "resURL_h5": "//cdn.c3yqcs.vkcgd.cn/h5office/",
+  "resURL_ad": "http://cdn.c3yqcs.vkcgd.cn/c3yqcs/cq3/cq3_and/",
+  "resURL_ios": "http://cdn.c3yqcs.vkcgd.cn/c3yqcs/cq3/cq3_ios/",
+  "resURL_win": "http://cdn.c3yqcs.vkcgd.cn/c3yqcs/cq3/cq3_win/",
+  "gmResURL_h5": "//cdn.c3yqcs.vkcgd.cn/489_2/",
+  "gmResVer_h5": "?v=20260728145911",
+  "sceneURL_cocosh5": "https://cdnh5.c3yq.huiyuewl.net/c3yq/cq3_h5_assets/",
+  "resURL_cocosh5": "https://cdnh5.c3yq.huiyuewl.net/c3yq/cq3_h5/"
 }

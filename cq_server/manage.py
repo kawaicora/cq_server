@@ -15,7 +15,7 @@ if __name__ == "__main__":
         socketio.run(
             app, 
             host=os.getenv("LISTEN_HOST","0.0.0.0"), 
-            port=int(os.getenv("LISTEN_PORT",80)),
+            port=int(os.getenv("LISTEN_PORT",5500)),
             debug=os.getenv("DEBUG",False), 
             use_reloader=False,
             allow_unsafe_werkzeug=True  # 允许在异步模式下使用调试功能

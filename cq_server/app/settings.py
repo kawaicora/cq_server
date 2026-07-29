@@ -29,7 +29,7 @@ class DefaultConfig (object):
     db_url = URL.create(**db_params)
     M2_DATABASE  = os.getenv("M2_DATABASE_URL")
     LOGGER_SERVICE_LISTEN_HOST=os.getenv("LOGGER_SERVICE_LISTEN_HOST","0.0.0.0")
-    LOGGER_SERVICE_LISTEN_PORT=int(os.getenv("LOGGER_SERVICE_LISTEN_PORT",10000))
+    LOGGER_SERVICE_LISTEN_PORT=int(os.getenv("LOGGER_SERVICE_LISTEN_PORT",6998))
     #############传奇数据库
     SDK_BASE_URL = os.getenv("SDK_BASE_URL")
     BASE_DIR = os.getenv("BASE_DIR", os.getcwd())

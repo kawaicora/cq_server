@@ -17,3 +17,4 @@ sqlacodegen
 qrcode
 loguru
 Pillow
+dotenv
